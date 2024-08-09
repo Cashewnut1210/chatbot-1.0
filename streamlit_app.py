@@ -14,6 +14,11 @@ model_options = ["gpt-3.5-turbo", "gpt-4", "davinci-codex", "text-davinci-003"]
 selected_model = st.sidebar.selectbox("Choose your model", model_options, index=0)
 
 st.sidebar.subheader("Chat Interface")
+
+# Button to clear chat history
+if st.sidebar.button('Clear Chat History'):
+    st.session_state.messages = []
+
 st.title("💬 Chatbot")
 
 if not api_key:
@@ -22,7 +27,7 @@ else:
     # Create an OpenAI client
     client = OpenAI(api_key=api_key)
 
-    # Session state for persisting chat messages
+    # Initialize chat messages if not already
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
