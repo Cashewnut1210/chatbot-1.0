@@ -1,6 +1,26 @@
 import streamlit as st
 from openai import OpenAI
 
+# Custom styles
+st.markdown("""
+<style>
+    .css-18e3th9 {
+        padding: 0.25rem 1rem;
+    }
+    .stButton>button {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+    .stTextInput>div>div>input {
+        color: black;
+    }
+    .css-1d391kg {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Title of the app
 st.title("💬 Chatbot")
 
@@ -16,7 +36,7 @@ if not openai_api_key:
 else:
     client = OpenAI(api_key=openai_api_key)
     model_options = ["gpt-3.5-turbo", "gpt-4"]
-    selected_model = st.selectbox("Select GPT Model", model_options)
+    selected_model = st.sidebar.selectbox("Select GPT Model", model_options)
 
     if "sessions" not in st.session_state:
         st.session_state.sessions = {}
@@ -32,17 +52,18 @@ else:
                 st.session_state.visible_options = session_name if st.session_state.visible_options != session_name else None
 
         if st.session_state.visible_options == session_name:
-            if st.sidebar.button("Rename", key=f"rename_{session_name}"):
-                new_name = st.text_input("New name for " + session_name, key="new_name_" + session_name)
-                if st.button("Save", key=f"save_{session_name}"):
-                    st.session_state.sessions[new_name] = st.session_state.sessions.pop(session_name)
-                    st.session_state.current_session = new_name
+            with st.sidebar.expander("Options"):
+                if st.button("Rename", key=f"rename_{session_name}"):
+                    new_name = st.text_input("New name for " + session_name, key="new_name_" + session_name)
+                    if st.button("Save", key=f"save_{session_name}"):
+                        st.session_state.sessions[new_name] = st.session_state.sessions.pop(session_name)
+                        st.session_state.current_session = new_name
+                        st.session_state.visible_options = None
+                if st.button("Delete", key=f"delete_{session_name}"):
+                    del st.session_state.sessions[session_name]
+                    if st.session_state.current_session == session_name:
+                        st.session_state.current_session = None
                     st.session_state.visible_options = None
-            if st.sidebar.button("Delete", key=f"delete_{session_name}"):
-                del st.session_state.sessions[session_name]
-                if st.session_state.current_session == session_name:
-                    st.session_state.current_session = None
-                st.session_state.visible_options = None
 
     new_session_name = st.sidebar.text_input("Create new session")
     if st.sidebar.button("Create Session"):
