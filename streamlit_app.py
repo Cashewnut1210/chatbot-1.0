@@ -5,11 +5,15 @@ from openai import OpenAI
 st.set_page_config(page_title="GPT-powered Chatbot", layout="wide")
 
 # Title and description in the sidebar
-st.sidebar.title("Settings")
-st.sidebar.subheader("Configuration")
+st.sidebar.title("Chatbot Settings")
+st.sidebar.subheader("API Configuration")
 api_key = st.sidebar.text_input("OpenAI API Key", type="password", value=st.secrets["openai_api_key"])
 
-# Main title
+# Model selection dropdown in the sidebar
+model_options = ["gpt-3.5-turbo", "gpt-4", "davinci-codex", "text-davinci-003"]
+selected_model = st.sidebar.selectbox("Choose your model", model_options, index=0)
+
+st.sidebar.subheader("Chat Interface")
 st.title("💬 Chatbot")
 
 if not api_key:
@@ -34,9 +38,9 @@ else:
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Generate a response using the OpenAI API
+        # Generate a response using the selected model and OpenAI API
         stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model=selected_model,
             messages=[
                 {"role": m["role"], "content": m["content"]}
                 for m in st.session_state.messages
