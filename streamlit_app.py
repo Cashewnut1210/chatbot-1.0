@@ -20,29 +20,29 @@ else:
 
     if "sessions" not in st.session_state:
         st.session_state.sessions = {}
-        st.session_state.current_session = None
+        st.session_state.visible_options = None
 
     st.sidebar.title("Chat Sessions")
     for session_name in list(st.session_state.sessions.keys()):
-        col1, col2, col3, col4 = st.sidebar.columns([3, 1, 1, 1])
+        col1, col2 = st.sidebar.columns([4, 1])
         with col1:
-            if st.sidebar.button(session_name):
-                st.session_state.current_session = session_name
+            st.sidebar.text(session_name)
         with col2:
-            if st.sidebar.button("🗑️", key=f"del_{session_name}"):
+            if st.sidebar.button("...", key=f"options_{session_name}"):
+                st.session_state.visible_options = session_name if st.session_state.visible_options != session_name else None
+
+        if st.session_state.visible_options == session_name:
+            if st.sidebar.button("Rename", key=f"rename_{session_name}"):
+                new_name = st.text_input("New name for " + session_name, key="new_name_" + session_name)
+                if st.button("Save", key=f"save_{session_name}"):
+                    st.session_state.sessions[new_name] = st.session_state.sessions.pop(session_name)
+                    st.session_state.current_session = new_name
+                    st.session_state.visible_options = None
+            if st.sidebar.button("Delete", key=f"delete_{session_name}"):
                 del st.session_state.sessions[session_name]
                 if st.session_state.current_session == session_name:
                     st.session_state.current_session = None
-        with col3:
-            if st.sidebar.button("✏️", key=f"ren_{session_name}"):
-                new_name = st.text_input("New name for " + session_name, key=session_name)
-                if st.button("Rename", key=f"rename_{session_name}"):
-                    st.session_state.sessions[new_name] = st.session_state.sessions.pop(session_name)
-                    if st.session_state.current_session == session_name:
-                        st.session_state.current_session = new_name
-        with col4:
-            if st.sidebar.button("📦", key=f"arc_{session_name}"):
-                st.sidebar.write("Archive logic here")
+                st.session_state.visible_options = None
 
     new_session_name = st.sidebar.text_input("Create new session")
     if st.sidebar.button("Create Session"):
