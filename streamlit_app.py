@@ -23,12 +23,12 @@ if st.sidebar.button("Create session"):
 # List, rename, and delete options for sessions
 for session in list(st.session_state.chat_sessions):
     with st.sidebar.expander(session):
-        rename = st.text_input("Rename session", key=session)
-        if st.button("Save", key=session):
+        rename = st.text_input("Rename session", key=f"rename_{session}")
+        if st.button("Save changes", key=f"save_{session}"):
             if rename and rename != session:
                 st.session_state.chat_sessions[rename] = st.session_state.chat_sessions.pop(session)
                 st.experimental_rerun()
-        if st.button("Delete", key=session):
+        if st.button("Delete session", key=f"delete_{session}"):
             del st.session_state.chat_sessions[session]
             st.experimental_rerun()
 
