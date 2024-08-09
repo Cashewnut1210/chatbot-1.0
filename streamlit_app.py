@@ -48,8 +48,7 @@ if st.session_state.current_session:
             try:
                 response = client.chat.completions.create(
                     model=selected_model,
-                    messages=[{"role": m["role"], "content": m["content"]} for m in session_messages],
-                    stream=True
+                    messages=[{"role": m["role"], "content": m["content"]} for m in session_messages]
                 )
                 response_text = response.choices[0].text.strip() if response.choices else "No response generated."
             except Exception as e:
