@@ -1,7 +1,7 @@
 import streamlit as st
 from openai import OpenAI
 
-# Custom styles for better aesthetics
+# Custom styles
 st.markdown("""
 <style>
     .css-18e3th9 {
@@ -17,9 +17,6 @@ st.markdown("""
     .css-1d391kg {
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;
-    }
-    .st-expander {
-        margin: 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -42,7 +39,9 @@ else:
 
     if "sessions" not in st.session_state:
         st.session_state.sessions = {}
-        st.session_state.visible_options = None
+
+    if "current_session" not in st.session_state:
+        st.session_state.current_session = None
 
     st.sidebar.title("Chat Sessions")
     for session_name in list(st.session_state.sessions.keys()):
@@ -51,9 +50,9 @@ else:
             st.sidebar.text(session_name)
         with col2:
             if st.sidebar.button("...", key=f"options_{session_name}"):
-                st.session_state.visible_options = session_name if st.session_state.visible_options != session_name else None
+                st.session_state.visible_options = session_name if (st.session_state.get('visible_options') != session_name) else None
 
-        if st.session_state.visible_options == session_name:
+        if st.session_state.get('visible_options') == session_name:
             if st.sidebar.button("Rename", key=f"rename_{session_name}"):
                 new_name = st.text_input("New name for " + session_name, key="new_name_" + session_name)
                 if st.button("Save", key=f"save_{session_name}"):
